@@ -70,17 +70,17 @@ describe Rencon do
       @rencon = Rencon.new @agent
 
       @tickets = mock('tickets')
-      @tickets.stub!(:reject!)
+      @tickets.stub!(:reject => @tickets )
+      @tickets.stub!(:[] => @tickets)
+      @page.stub!(:body)
       NKF.stub!(:nkf)
-      CSV.stub!(:parse => @tickets)
     end
 
     it 'should retrieve tickets and title' do
       @title = mock('title')
       @title.stub!(:sub => @title)
       @page.should_receive(:title).and_return(@title)
-      @page.should_receive(:body)
-      @tickets.should_receive(:shift)
+      CSV.should_receive(:parse).and_return(@tickets)
 
       @rencon.retrieve('rencon').should == [@tickets, @title]
     end
