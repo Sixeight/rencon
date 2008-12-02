@@ -1,15 +1,39 @@
 
-Rencon is commandline interface of Redmine
+= Rencon
 
-Usage:
+* http://github.com/Sixeight/rencon/tree/master
+
+== DESCRIPTION:
+
+  Rencon is commandline interface of Redmine
+
+== REQUIREMENTS:
+
+* mechanize
+** sudo gem install mechanize
+
+== USAGE:
+
+Type
 
   $ rencon yourproj
 
+then you get
+
+  my project
+  ------------------
+  + #18 write documentation for app
+  - #15 design more simple api
+
++/- symbol means ticket was assined to you or not. '+' is your task, '-' is not.
+
 If rencon was given project name, he uses first project name on your list.
 
-  If you set list like PROJECTS = %w[ rencon gobow ]
-  and run rencon without arguments
-  then rencon uses 'rencon' as project name.
+If you set list like PROJECTS = %w[ rencon gobow ]
+and run rencon without arguments
+then rencon uses 'rencon' as project name.
+
+== SETTINGS:
 
 You must write a following settings in bin/rencon to use rencon.
 
