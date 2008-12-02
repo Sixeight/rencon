@@ -6,7 +6,7 @@ require 'rencon'
 
 
 CONFIG = {
-  :host     => 'REDMINE URL',
+  :host     => 'REDMINE.URL/without/protocol',
   :user     => 'USERNAME',
   :pass     => 'PASSWORD',
   :name     => 'YOUR NAME',

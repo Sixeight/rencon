@@ -11,7 +11,7 @@ class Rencon
     @agent = WWW::Mechanize.new
     @agent.user_agent_alias = 'Mac Safari'
 
-    page = @agent.get @config[:host] + '/login'
+    page = @agent.get 'http://' + @config[:host] + '/login'
     form = page.forms[1]
     form.username conf(:user)
     form.password conf(:pass)

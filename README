@@ -11,3 +11,21 @@ If rencon was given project name, he uses first project name on your list.
   and run rencon without arguments
   then rencon uses 'rencon' as project name.
 
+You must write a following settings in bin/rencon to use rencon.
+
+  CONFIG = {
+    :host     => 'REDMINE.URL/wituout/protocol',
+    :user     => 'USERNAME',
+    :pass     => 'PASSWORD',
+    :name     => 'YOUR NAME',
+    :per_page => 50,
+  }
+
+  PROJECTS = %w[
+    galerie
+    filemanage
+    web-site
+    server-setup
+    migs
+  ]
+
