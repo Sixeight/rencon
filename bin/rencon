@@ -1,0 +1,39 @@
+#! /usr/bin/env ruby
+$KCODE = 'utf-8'
+
+$:.unshift(File.dirname(__FILE__) + '/../lib')
+require 'rencon'
+
+
+CONFIG = {
+  :host     => 'REDMINE URL',
+  :user     => 'USERNAME',
+  :pass     => 'PASSWORD',
+  :name     => 'YOUR NAME',
+  :per_page => 50,
+}
+
+PROJECTS = %w[
+  galerie
+  filemanage
+  web-site
+  server-setup
+  migs
+]
+PROJECT = PROJECTS.find {|proj| proj =~ /#{ARGV[0]}/ }
+
+if PROJECT.nil?
+  warn 'project was not found'
+  exit 1
+end
+
+rencon = Rencon.new CONFIG
+mark = rencon.lambda_mark
+tickets, title = rencon.retrieve PROJECT
+tickets.map {|issue| issue[0].sub!(/\A/, '#') }
+ticket_list = tickets.map {|row| row.values_at(0, 5).unshift(mark[row[6]]) * ' ' }
+
+puts title
+puts '-' * 18
+puts ticket_list
+
