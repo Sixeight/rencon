@@ -14,11 +14,7 @@ CONFIG = {
 }
 
 PROJECTS = %w[
-  galerie
-  filemanage
-  web-site
-  server-setup
-  migs
+  YOUR PROJECT NAME HERE
 ]
 PROJECT = PROJECTS.find {|proj| proj =~ /#{ARGV[0]}/ }
 
