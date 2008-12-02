@@ -19,13 +19,15 @@ class Rencon
   end
 
   def retrieve(project, per_page = 25)
-    title = @agent.get("/projects/show/#{project}").title.sub(/\s-.*\z/, '')
+    title = @agent.get("http://#{conf(:host)}/projects/show/#{project}").title.sub(/\s-.*\z/, '')
 
     per_page = conf(:per_page) || per_page
-    page = @agent.get "/projects/#{project}/issues/?per_page=#{per_page}&format=csv"
+    page = @agent.get "http://#{conf(:host)}/projects/#{project}/issues/?per_page=#{per_page}&format=csv"
     # FIXME: Muiltiline descriptions are rounded off to one lines.
+    #        #reject can not know correct number of issue's status.
+    #        now size < 10, but this is a first aid. need fix rapidly.
     tickets = CSV.parse(page.body.to_s.toutf8).
-      reject {|issue| issue.size != 17 }[1..-1]
+      reject {|issue| issue.size < 10 }[1..-1]
 
     [tickets, title]
   end
