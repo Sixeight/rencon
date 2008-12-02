@@ -1,10 +1,10 @@
 require 'rubygems'
 require 'mechanize'
-require 'nkf'
+require 'kconv'
 require 'csv'
 
 class Rencon
-  # TODO: need check code for config
+  # TODO: config needs checks
   def initialize(config)
     @config = config
 
@@ -19,15 +19,18 @@ class Rencon
   end
 
   def retrieve(project, per_page = 25)
-    page = @agent.get "/projects/show/#{project}"
-    title = page.title.sub(/\s-.*\z/, '')
+    title = @agent.get("/projects/show/#{project}").title.sub(/\s-.*\z/, '')
 
-    per_page = conf(:per_page) || per_page
+    per_page ||= conf(:per_page)
     page = @agent.get "/projects/#{project}/issues/?per_page=#{per_page}&format=csv"
-    tickets = CSV.parse NKF.nkf('-w', page.body)
-    # FIXME: Muiltiline descriptions are rounded off to one line.
+    tickets = CSV.parse(page.body.to_s.toutf8)
+    # FIXME: Muiltiline descriptions are rounded off to one lines.
     tickets.reject! {|issue| issue.size != 17 }
     tickets.shift
+
+    # The current mock doesn't accept below :-(
+    # tickets = CSV.parse(page.body.to_s.toutf8).
+    #   reject {|issue| issue.size != 17 }[1..-1]
 
     [tickets, title]
   end
@@ -35,7 +38,7 @@ class Rencon
   def lambda_mark
     mine = conf(:mark, :mine) || '+'
     none = conf(:mark, :none) || '-'
-    lambda {|name| name =~ /#{conf[:name]}/ ? mine : none }
+    lambda {|name| /#{conf[:name]}/ =~ name ? mine : none }
   end
 
   def mark(name)
@@ -44,9 +47,10 @@ class Rencon
 
   private
   def conf(*keys)
+    # same as:
+    #   keys.inject(@config, :[]) rescue nil
     keys.inject(@config) do |conf, key|
-      value = conf[key] or break nil
-      value
+      conf[key] or break nil
     end
   end
 end
