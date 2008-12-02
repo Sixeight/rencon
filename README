@@ -1,0 +1,13 @@
+
+Rencon is commandline interface of Redmine
+
+Usage:
+
+  $ rencon yourproj
+
+If rencon was given project name, he uses first project name on your list.
+
+  If you set list like PROJECTS = %w[ rencon gobow ]
+  and run rencon without arguments
+  then rencon uses 'rencon' as project name.
+

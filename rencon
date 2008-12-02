@@ -1,0 +1,94 @@
+#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'mechanize'
+require 'nkf'
+require 'csv'
+
+$KCODE = 'utf-8'
+
+
+CONFIG = {
+  :host     => 'REDMINE URL',
+  :user     => 'USERNAME',
+  :pass     => 'PASSWORD',
+  :name     => 'YOUR NAME',
+  :per_page => 50,
+}
+
+PROJECTS = %w[
+  galerie
+  filemanage
+  web-site
+  server-setup
+  migs
+]
+PROJECT = PROJECTS.find {|proj| proj =~ /#{ARGV[0]}/ }
+
+class Rencon
+  def initialize(config = CONFIG)
+    @config = config
+
+    @agent = WWW::Mechanize.new
+    @agent_user_agent_alias = 'mac Safari'
+
+    page = @agent.get @config[:host] + '/login'
+    form = page.forms[1]
+    form.username conf(:user)
+    form.password conf(:pass)
+    @agent.submit form
+  end
+
+  def retrieve(project, per_page = 25)
+    page = @agent.get "/projects/show/#{project}"
+    title = page.title.sub(/\s-.*\z/, '')
+
+    per_page = conf(:per_page) || per_page
+    page = @agent.get "/projects/#{project}/issues/?per_page=#{per_page}&format=csv"
+    tickets = CSV.parse NKF.nkf('-w', page.body)
+    # FIXME: Muiltiline descriptions are rounded off to one line.
+    tickets.reject! {|issue| issue.size != 17 }
+    tickets.shift
+
+    [tickets, title]
+  end
+
+  def lambda_mark
+    mine = conf(:mark, :mine) || '+'
+    none = conf(:mark, :onne) || '-'
+    lambda {|name| name =~ /#{@config[:name]}/ ? mine : none }
+  end
+
+  def mark(name)
+    lambda_mark[name]
+  end
+
+  private
+  def conf(*keys)
+    keys.inject(@config) do |conf, key|
+      value = conf[key] or break nil
+      value
+    end
+  end
+end
+
+if $0 == __FILE__
+  if PROJECT.nil?
+    warn 'project was not found'
+    exit 1
+  end
+
+  rencon = Rencon.new
+  tickets, title = rencon.retrieve PROJECT
+  mark = rencon.lambda_mark
+
+  tickets.map {|issue| issue[0].sub!(/\A/, '#') }
+  ticket_list = tickets.map {|row|
+    row.values_at(0, 5).unshift(mark[row[6]]) * ' '
+  }
+
+  puts title
+  puts '-' * 18
+  puts ticket_list
+end
+
