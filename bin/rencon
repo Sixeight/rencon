@@ -14,7 +14,7 @@ CONFIG = {
 }
 
 PROJECTS = %w[
-  YOUR PROJECT NAME HERE
+  YOUR PROJECT NAMES HERE
 ]
 PROJECT = PROJECTS.find {|proj| proj =~ /#{ARGV[0]}/ }
 

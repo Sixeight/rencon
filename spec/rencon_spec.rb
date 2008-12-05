@@ -9,8 +9,20 @@ describe Rencon do
     end
   end
 
+  it 'check method should check configuration' do
+    Rencon.class_eval %[ public :check ]
+    rencon = Rencon.new(nil)
+
+    config = {}
+    [:host, :user, :pass, :name].each do |key|
+      rencon.check(config).should be_false
+      config.store key, nil
+    end
+    rencon.check(config).should be_true
+  end
+
   it 'conf method should be able to parse doubled hash and return correct value' do
-    Rencon.class_eval { public :conf }
+    Rencon.class_eval %[ public :conf ]
     @foo = 'foo'
     @bar = 'bar'
     rencon = Rencon.new({:one => {
