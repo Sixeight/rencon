@@ -69,7 +69,7 @@ describe Rencon do
   describe 'when call retrieve method' do
 
     before do
-      @page  = mock('page')
+      @page  = mock('page', :null_object => true)
       @agent = mock('agent')
       @agent.stub!(:get => @page, :page => @page)
       class Rencon
@@ -81,19 +81,27 @@ describe Rencon do
       end
       @rencon = Rencon.new @agent
 
+      @states = mock('names')
       @tickets = mock('tickets')
-      @tickets.stub!(:reject => @tickets )
-      @tickets.stub!(:[] => @tickets)
       @page.stub!(:body)
+      @title = mock('title')
+      @title.stub!(:sub => @title)
     end
 
     it 'should retrieve tickets and title' do
-      @title = mock('title')
-      @title.stub!(:sub => @title)
+      @tickets.stub!(:reject => [@states, @tickets] )
       @page.should_receive(:title).and_return(@title)
       CSV.should_receive(:parse).and_return(@tickets)
 
-      @rencon.retrieve('rencon').should == [@tickets, @title]
+      @rencon.retrieve('rencon').should == [[@tickets], @title]
+    end
+
+    it 'should states methods returns ticket states name' do
+      CSV.stub!(:parse => @tickets)
+      @states = ['#', 'tracker', 'user']
+      @tickets.stub!(:reject => [@names, @tickets] )
+      @rencon.retrieve('rencon')
+      @rencon.states.should == @names
     end
   end
 end

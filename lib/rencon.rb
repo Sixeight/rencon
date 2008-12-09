@@ -5,9 +5,12 @@ require 'csv'
 
 class Rencon
 
+  attr_reader :states
+
   def initialize(config)
     check(config) or raise 'Invalid configuration'
     @config = config
+    @states  = nil
     @agent  = WWW::Mechanize.new
     @agent.user_agent = 'Mac Safari'
     login
@@ -18,11 +21,11 @@ class Rencon
 
     per_page = conf(:per_page) || per_page
     @agent.get "http://#{conf(:host)}/projects/#{project}/issues/?per_page=#{per_page}&format=csv"
-    tickets  = CSV.parse(@agent.page.body.to_s.toutf8).
+    @states, *tickets  = CSV.parse(@agent.page.body.to_s.toutf8).
       # FIXME: Muiltiline descriptions are rounded off to one lines.
       #        #reject can not know correct number of issue's status.
       #        now size < 10, but this is a first aid. need fix rapidly.
-      reject {|issue| issue.size < 10 }[1..-1]
+      reject {|issue| issue.size < 10 }
 
     [tickets, title]
   end
