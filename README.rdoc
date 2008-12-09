@@ -46,10 +46,6 @@ You must write a following settings in bin/rencon to use rencon.
   }
 
   PROJECTS = %w[
-    galerie
-    filemanage
-    web-site
-    server-setup
-    migs
+    YOUR PROJECT NAMES HERE
   ]
 
