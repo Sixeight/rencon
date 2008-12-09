@@ -17,8 +17,8 @@ class Rencon
     title = @agent.get("http://#{conf(:host)}/projects/show/#{project}").title.sub(/\s-.*\z/, '')
 
     per_page = conf(:per_page) || per_page
-    page     = @agent.get "http://#{conf(:host)}/projects/#{project}/issues/?per_page=#{per_page}&format=csv"
-    tickets  = CSV.parse(page.body.to_s.toutf8).
+    @agent.get "http://#{conf(:host)}/projects/#{project}/issues/?per_page=#{per_page}&format=csv"
+    tickets  = CSV.parse(@agent.page.body.to_s.toutf8).
       # FIXME: Muiltiline descriptions are rounded off to one lines.
       #        #reject can not know correct number of issue's status.
       #        now size < 10, but this is a first aid. need fix rapidly.
@@ -39,11 +39,12 @@ class Rencon
 
   private
   def login
-    page = @agent.get "http://#{conf(:host)}/login"
-    form = page.forms[1]
-    form.username conf(:user)
-    form.password conf(:pass)
-    @agent.submit form
+    @agent.get "http://#{conf(:host)}/login"
+    @agent.page.form_with(:action => '/login') do |f|
+      f.field_with(:name => 'username').value = conf(:user)
+      f.field_with(:name => 'password').value = conf(:pass)
+      f.click_button
+    end
   end
 
   # FIXME: need more check

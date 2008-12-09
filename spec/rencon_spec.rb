@@ -71,7 +71,7 @@ describe Rencon do
     before do
       @page  = mock('page')
       @agent = mock('agent')
-      @agent.stub!(:get => @page)
+      @agent.stub!(:get => @page, :page => @page)
       class Rencon
         # login can't success on offline test
         def initialize(config)
@@ -85,7 +85,6 @@ describe Rencon do
       @tickets.stub!(:reject => @tickets )
       @tickets.stub!(:[] => @tickets)
       @page.stub!(:body)
-      NKF.stub!(:nkf)
     end
 
     it 'should retrieve tickets and title' do
