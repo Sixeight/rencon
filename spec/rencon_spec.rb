@@ -9,33 +9,30 @@ describe Rencon do
     end
   end
 
-  it 'check method should check configuration' do
-    Rencon.class_eval %[ public :check ]
+  it 'check method should check the configuration' do
     rencon = Rencon.new(nil)
 
     config = {}
     [:host, :user, :pass, :name].each do |key|
-      rencon.check(config).should be_false
+      rencon.__send__(:check, config).should be_false
       config.store key, nil
     end
-    rencon.check(config).should be_true
+    rencon.__send__(:check, config).should be_true
   end
 
-  it 'conf method should be able to parse doubled hash and return correct value' do
-    Rencon.class_eval %[ public :conf ]
+  it 'conf method should be able to parse a doubled hash and return the correct value' do
     @foo = 'foo'
     @bar = 'bar'
     rencon = Rencon.new({:one => {
                            :two1 => @foo,
                            :two2 => @bar
                         }})
-    rencon.conf(:one, :two1).should == @foo
-    rencon.conf(:one, :two2).should == @bar
-    rencon.conf(:one, :two3).should == nil
+    rencon.__send__(:conf, :one, :two1).should == @foo
+    rencon.__send__(:conf, :one, :two2).should == @bar
+    rencon.__send__(:conf, :one, :two3).should == nil
   end
 
   describe 'specification around the mark method' do
-
     before do
       @correct_name = 'John Rencon'
       @wrong_name   = 'Tomohiro Nishimura'
@@ -67,7 +64,6 @@ describe Rencon do
   end
 
   describe 'when call retrieve method' do
-
     before do
       @page  = mock('page', :null_object => true)
       @agent = mock('agent')
