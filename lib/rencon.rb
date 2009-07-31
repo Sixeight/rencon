@@ -5,6 +5,26 @@ require 'csv'
 
 module Rencon
 
+  class Ticket
+    attr_reader :number, :status, :project
+    attr_reader :tracker, :priority, :subject
+    attr_reader :assigned_to, :category
+    attr_reader :target_version, :author
+    attr_reader :start, :due_date, :done_rate
+    attr_reader :estimated_time, :created_at
+    attr_reader :updated_at, :description
+
+    def self.new_with_order(values, order)
+      issue = new
+      values.each_with_index do |v, i|
+        issue.instance_variable_set("@#{order[i]}", v)
+      end
+      issue
+    end
+
+    private_class_method :new
+  end
+
   class Core
 
     attr_reader :states
