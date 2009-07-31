@@ -23,7 +23,7 @@ if PROJECT.nil?
   exit 1
 end
 
-rencon = Rencon.new CONFIG
+rencon = Rencon::Core.new CONFIG
 mark = rencon.lambda_mark
 tickets, title = rencon.retrieve PROJECT
 tickets.map {|issue| issue[0].sub!(/\A/, '#') }
